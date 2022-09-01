@@ -1,50 +1,77 @@
-//will handle /dines & /dines/:dineId
-
 const express = require('express');
+const Dine = require('../models/dine');
+
 const dineRouter = express.Router();//instance of express.Router()
 
 dineRouter.route('/')
- .all((req, res, next) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');//response will be sent in plain text in res body
-  next();
- })
- .get((req, res) => {
-  //app.all already set response status code and header
-  res.end('Will send you dining options to you');
- })
- .post((req, res) => {
-  res.end(`Will add the Dine experience req.body.name: ${req.body.name} with description: ${req.body.description} `);
- })
- .put((req, res) => {
-  res.statusCode = 403; //403 == Operation not supported 
-  res.end('PUT operation not supported on /dines');
- })
- .delete((req, res) => {
-  res.end('Deleting all dines experiences');
- });
+    .get((req, res, next) => {
+        Dine.find()
+            .then(dines => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(dines);//auto closes response stream, done need end()
+            })
+            .catch(err => next(err));//hands off error to overall handler in expres app.js
+    })
+    .post((req, res, next) => {
+        Dine.create(req.body)
+            .then(createdDine => {
+                console.log('Dine Created', createdDine);
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(createdDine);
+            })
+            .catch(err => next(err));
+    })
+    .put((req, res) => {
+        res.statusCode = 403; //403 == Operation not supported 
+        res.end('PUT operation not supported on /dines');
+    })
+    .delete((req, res, next) => {
+        Dine.deleteMany()
+            .then(response => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(response);
+            })
+            .catch(err => next(err));
+    });
 
 
 dineRouter.route('/:dineId')
- .all((req, res, next) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');//response will be sent in plain text in res body
-  next();
- })
- .get((req, res) => {
-  res.end(`Will send details of the dine experience id: ${req.params.dineId} to you`);
- })
- .post((req, res) => {
-  res.statusCode = 403;//403 == operation not supported
-  res.end(`POST operation is not supported on /dines/${req.params.dineId}`);
- })
- .put((req, res) => {
-  res.write(`Updating the dine: ${req.params.dineId}\n`);
-  res.end(`Will update the dine ${req.body.name}
-     with description ${req.body.description}`); //sent as JSON formatted body;
- })
- .delete((req, res) => {
-  res.end(`Deleting dine: ${req.params.dineId}`);
- });
+    .get((req, res, next) => {
+        Dine.findById(req.params.dineId)//parses id requested by user/client
+            .then(dine => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(dine);
+            })
+            .catch(err => next(err));
+    })
+    .post((req, res) => {
+        res.statusCode = 403;//403 == operation not supported
+        res.end(`POST operation is not supported on /dines/${req.params.dineId}`);
+    })
+    .put((req, res, next) => {
+        Dine.findByIdAndUpdate(req.params.dineId, {
+            $set: req.body
+        },
+            { new: true }//returns updated document
+        )
+            .then(dine => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(dine);//sends updated document 
+            });
+    })
+    .delete((req, res, next) => {
+        Dine.findByIdAndDelete(req.params.dineId)
+            .then(response => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(response);//sends json data in response stream and closes response stream
+            })
+            .catch(err => next(err));
+    });
 
 module.exports = dineRouter;

@@ -74,4 +74,45 @@ dineRouter.route('/:dineId')
             .catch(err => next(err));
     });
 
+dineRouter.route('/:dineId/comments')
+    .get((req, res, next) => {
+        Dine.findById(req.params.dineId)//API docs ==> this method makes most sense
+            .then(dine => {
+                if (dine) {
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.json(dine.comments);
+                } else {
+                    err = new Error(`Dine experience ${req.params.dineId} not found`);
+                    err.status = 404;
+                    return next(err);//passes error to express error handler mechanism
+                }
+            })
+            .catch(err => next(err));//hands off error to overall handler in expres app.js
+    })
+    .post((req, res, next) => {
+        Dine.create(req.body)
+            .then(createdDine => {
+                console.log('Dine Created', createdDine);
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(createdDine);
+            })
+            .catch(err => next(err));
+    })
+    .put((req, res) => {
+        res.statusCode = 403; //403 == Operation not supported 
+        res.end('PUT operation not supported on /dines');
+    })
+    .delete((req, res, next) => {
+        Dine.deleteMany()
+            .then(response => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(response);
+            })
+            .catch(err => next(err));
+    });
+
+
 module.exports = dineRouter;

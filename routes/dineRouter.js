@@ -76,26 +76,26 @@ dineRouter.route('/:dineId')
 
 dineRouter.route('/:dineId/comments')
     .get((req, res, next) => {
-        Dine.findById(req.params.dineId)//API docs ==> this method makes most sense
+        Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine) {
                     res.statusCode = 200;
                     res.setHeader('Content-Type', 'application/json');
                     res.json(dine.comments);
                 } else {
-                    err = new Error(`Dine experience ${req.params.dineId} not found`);
+                    err = new Error(`dine ${req.params.dineId} not found`);
                     err.status = 404;
-                    return next(err);//passes error to express error handler mechanism
+                    return next(err);
                 }
             })
-            .catch(err => next(err));//hands off error to overall handler in expres app.js
+            .catch(err => next(err));
     })
     .post((req, res, next) => {
-        Dine.findById(req.params.dineId)//API docs ==> this method makes most sense
+        Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine) {
                     dine.comments.push(req.body);
-                    dine.save()//save above into document in Database
+                    dine.save()
                         .then(dine => {
                             res.statusCode = 200;
                             res.setHeader('Content-Type', 'application/json');
@@ -103,25 +103,25 @@ dineRouter.route('/:dineId/comments')
                         })
                         .catch(err => next(err));
                 } else {
-                    err = new Error(`Dine experience ${req.params.dineId} not found`);
+                    err = new Error(`dine ${req.params.dineId} not found`);
                     err.status = 404;
-                    return next(err);//pass error to express error handler mechanism
+                    return next(err);
                 }
             })
             .catch(err => next(err));
     })
     .put((req, res) => {
-        res.statusCode = 403; //403 == Operation not supported 
+        res.statusCode = 403;
         res.end(`PUT operation not supported on /dines/${req.params.dineId}/comments`);
     })
     .delete((req, res, next) => {
-        Dine.findById(req.params.dineId)//API docs ==> this method makes most sense
+        Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine) {
-                    for (let i = dine.comments.length - 1; i >= 0; i--) {
+                    for (let i = (dine.comments.length - 1); i >= 0; i--) {
                         dine.comments.id(dine.comments[i]._id).remove();
                     }
-                    dine.save()//save above into document in Database
+                    dine.save()
                         .then(dine => {
                             res.statusCode = 200;
                             res.setHeader('Content-Type', 'application/json');
@@ -129,9 +129,9 @@ dineRouter.route('/:dineId/comments')
                         })
                         .catch(err => next(err));
                 } else {
-                    err = new Error(`Dine experience ${req.params.dineId} not found`);
+                    err = new Error(`dine ${req.params.dineId} not found`);
                     err.status = 404;
-                    return next(err);//pass error to express error handler mechanism
+                    return next(err);
                 }
             })
             .catch(err => next(err));
@@ -139,24 +139,23 @@ dineRouter.route('/:dineId/comments')
 
 dineRouter.route('/:dineId/comments/:commentId')
     .get((req, res, next) => {
-        Dine.findById(req.params.dineId)//API docs ==> this method makes most sense
+        Dine.findById(req.params.dineId)
             .then(dine => {
-                if (dine && dine.comments.id(req.params.commentId)) {//if both truthy
+                if (dine && dine.comments.id(req.params.commentId)) {
                     res.statusCode = 200;
                     res.setHeader('Content-Type', 'application/json');
                     res.json(dine.comments.id(req.params.commentId));
-                }
-                else if (!campsite) {
-                    err = new Error(`Dine experience ${req.params.dineId} not found`);
+                } else if (!dine) {
+                    err = new Error(`dine ${req.params.dineId} not found`);
                     err.status = 404;
-                    return next(err);//passes error to express error handler mechanism
+                    return next(err);
                 } else {
                     err = new Error(`Comment ${req.params.commentId} not found`);
                     err.status = 404;
-                    return next(err);//passes error to express error handler mechanism
+                    return next(err);
                 }
             })
-            .catch(err => next(err));//hands off error to overall handler in expres app.js
+            .catch(err => next(err));
     })
     .post((req, res) => {
         res.statusCode = 403;
@@ -165,14 +164,14 @@ dineRouter.route('/:dineId/comments/:commentId')
     .put((req, res, next) => {
         Dine.findById(req.params.dineId)
             .then(dine => {
-                if (dine && dine.comments.id(req.params.commentId)) {//comment & dine exist
-                    if (req.body.rating) {//if new rating passed in
+                if (dine && dine.comments.id(req.params.commentId)) {
+                    if (req.body.rating) {
                         dine.comments.id(req.params.commentId).rating = req.body.rating;
                     }
                     if (req.body.text) {
-                        dine.comments.id(req.params.commendId).text = req.body.text;
+                        dine.comments.id(req.params.commentId).text = req.body.text;
                     }
-                    dine.save()//save to MongoDB server
+                    dine.save()
                         .then(dine => {
                             res.statusCode = 200;
                             res.setHeader('Content-Type', 'application/json');
@@ -180,7 +179,7 @@ dineRouter.route('/:dineId/comments/:commentId')
                         })
                         .catch(err => next(err));
                 } else if (!dine) {
-                    err = new Error(`Dine experience ${req.params.dineId} not found`);
+                    err = new Error(`Dine experience${req.params.dineId} not found`);
                     err.status = 404;
                     return next(err);
                 } else {
@@ -189,22 +188,22 @@ dineRouter.route('/:dineId/comments/:commentId')
                     return next(err);
                 }
             })
-            .catch(err => next(err));//hands off error to overall handler in expres app.js
+            .catch(err => next(err));
     })
     .delete((req, res, next) => {
         Dine.findById(req.params.dineId)
             .then(dine => {
-                if (dine && dine.comments.id(req.params.commentId)) {//comment & dine exist
-                    campsite.comments.id(req.params.commentId).remove();
-                    dine.save()//save to MongoDB server
+                if (dine && dine.comments.id(req.params.commentId)) {
+                    dine.comments.id(req.params.commentId).remove();
+                    dine.save()
                         .then(dine => {
                             res.statusCode = 200;
                             res.setHeader('Content-Type', 'application/json');
                             res.json(dine);
                         })
                         .catch(err => next(err));
-                } else if (!campsite) {
-                    err = new Error(`Dine experience ${req.params.dineId} not found`);
+                } else if (!dine) {
+                    err = new Error(`dine ${req.params.dineId} not found`);
                     err.status = 404;
                     return next(err);
                 } else {
@@ -213,8 +212,7 @@ dineRouter.route('/:dineId/comments/:commentId')
                     return next(err);
                 }
             })
-            .catch(err => next(err));//hands off error to overall handler in expres app.js
+            .catch(err => next(err));
     });
-
 
 module.exports = dineRouter;

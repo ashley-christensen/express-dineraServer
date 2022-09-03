@@ -1,6 +1,9 @@
 {
 	"name": "dineraserver",
 	"version": "0.0.0",
+	"engines": {
+		"node": "~16.13.2"
+	},
 	"private": true,
 	"scripts": {
 		"start": "dotenv node ./bin/www"

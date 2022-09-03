@@ -13,17 +13,24 @@ const partnerRouter = require('./routes/partnerRouter');
 
 const mongoose = require('mongoose');
 
+const port = process.env.PORT || 3100;
+const hostname = process.env.HOSTNAME;
 const url = 'mongodb://localhost:27017/dinera';
-const connect = mongoose.connect(url, {
-  useCreateIndex: true,
-  useFindAndModify: false,
+const uri = process.env.DB_URI;
+const connect = mongoose.connect(uri, {
+  dbName: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  pass: process.env.DB_PASS,
   useNewUrlParser: true,
-  useUnifiedTopology: true
-});
-
-connect.then(() => console.log('Connected successfully to server'),
-  err => console.log(err)//alternative to catching promise rejection
-);
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true
+})
+  .then(() => {
+    console.log('Connection estabislished with MongoDB');
+    console.log('Connected successfully to server');
+  })
+  .catch(error => console.error(error.message));
 
 const app = express();
 

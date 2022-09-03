@@ -1,5 +1,3 @@
-
-
 const express = require('express');
 const promotionRouter = express.Router();//instance of express.Router()
 const Promotion = require('../models/promotion');

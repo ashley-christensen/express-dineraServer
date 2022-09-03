@@ -12,8 +12,11 @@ const dineRouter = require('./routes/dineRouter');
 const promotionRouter = require('./routes/promotionRouter');
 const partnerRouter = require('./routes/partnerRouter');
 
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const mongoose = require('mongoose');
-
+mongoose.Promise = global.Promise;
 // const url = 'mongodb://localhost:27017/dinera';
 const uri = process.env.DB_URI;
 const connect = mongoose.connect(uri, {
@@ -25,6 +28,7 @@ const connect = mongoose.connect(uri, {
   useFindAndModify: false,
   useCreateIndex: true
 });
+
 connect.then(() => {
   console.log('Connection estabislished with MongoDB');
   console.log('Connected successfully to server');
@@ -46,6 +50,8 @@ app.use(cors({
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

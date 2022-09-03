@@ -16,23 +16,27 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-// const url = 'mongodb://localhost:27017/dinera';
-const uri = process.env.DB_URI;
-const connect = mongoose.connect(uri, {
-  dbName: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  pass: process.env.DB_PASS,
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true
-});
 
-connect.then(() => {
-  console.log('Connection estabislished with MongoDB');
-  console.log('Connected successfully to server');
+// const url = 'mongodb://localhost:27017/dinera';
+// const uri = process.env.DB_URI;
+// const connect = mongoose.connect(uri, {
+//   dbName: process.env.DB_NAME,
+//   user: process.env.DB_USER,
+//   pass: process.env.DB_PASS,
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   useFindAndModify: false,
+//   useCreateIndex: true
+// });
+
+// connect
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
+  console.log(" Connected to the database");
 })
+  // .then(() => {
+  //   console.log('Connection estabislished with MongoDB');
+  //   console.log('Connected successfully to server');
+  // })
   .catch(error => console.error(error.message));
 
 const app = express();

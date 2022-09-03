@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -13,8 +14,6 @@ const partnerRouter = require('./routes/partnerRouter');
 
 const mongoose = require('mongoose');
 
-const port = process.env.PORT || 3100;
-const hostname = process.env.HOSTNAME;
 const url = 'mongodb://localhost:27017/dinera';
 const uri = process.env.DB_URI;
 const connect = mongoose.connect(uri, {
@@ -38,6 +37,12 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+//middleware
+app.use(cors({
+  // react app location -- for testing on localhost - http://localhost:3000
+  origin: "http://localhost:3000",
+  credentials: true
+}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

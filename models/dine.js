@@ -21,6 +21,10 @@ const commentSchema = new Schema({
 });//schema second arg is configs, mongoose adds createdAt and updatedAt timestamp properties
 
 const dineSchema = new Schema({
+ id: {
+  type: Number,
+  required: true,
+ },
  name: {
   type: String,
   required: true,

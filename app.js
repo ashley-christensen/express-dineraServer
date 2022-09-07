@@ -37,12 +37,12 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-//middleware
-// app.use(cors({
-//   // react app location -- for testing on localhost - http://localhost:3000
-//   origin: "http://localhost:3000",
-//   credentials: true
-// }));
+middleware;
+app.use(cors({
+  // react app location -- for testing on localhost - http://localhost:3000
+  origin: "http://localhost:3000",
+  credentials: true
+}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

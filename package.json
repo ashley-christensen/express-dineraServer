@@ -2,7 +2,7 @@
 	"name": "dineraserver",
 	"version": "0.0.0",
 	"engines": {
-		"node": "~16.13.2"
+		"node": "16.x"
 	},
 	"private": true,
 	"scripts": {

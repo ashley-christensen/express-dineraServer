@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 require('dotenv').config();
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);//require sessionfilestore returns function to call session
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -49,12 +51,20 @@ app.use(cors(
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser('12345'));
+// app.use(cookieParser('12345'));
 
-//authenticatation Auth()
+app.use(session({
+  name: 'session-id',
+  secret: '12345-67891-12345-67891',
+  saveUninitialized: false,//on request end, not saved = avoid empty session files/cookies
+  resave: false,//Keep session marked as active
+  store: new FileStore()//creates new file store object to save session info to server disk
+}));
 
+//authenticatation
 function auth(req, res, next) {
-  if (!req.signedCookies.user) {
+  console.log(req.session);
+  if (!req.session.user) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       const err = new Error('You are not authenticated!');
@@ -67,8 +77,8 @@ function auth(req, res, next) {
     const user = auth[0];
     const pass = auth[1];
     if (user === 'admin' && pass === 'password') {
-      res.cookie('user', 'admin', { signed: true });
-      return next(); // authorized
+      req.session.user = 'admin';//save to session that user is admin
+      return next(); //if authorized send to next
     } else {
       const err = new Error('You are not authenticated!');
       res.setHeader('WWW-Authenticate', 'Basic');
@@ -76,7 +86,7 @@ function auth(req, res, next) {
       return next(err);
     }
   } else {
-    if (req.signedCookies.user === 'admin') {
+    if (req.session.user === 'admin') {
       return next();
     } else {
       const err = new Error('You are not authenticated!');

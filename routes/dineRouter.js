@@ -16,7 +16,6 @@ dineRouter.route('/')
     .post((req, res, next) => {
         Dine.create(req.body)
             .then(createdDine => {
-                console.log('Dine Created', createdDine);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
                 res.json(createdDine);

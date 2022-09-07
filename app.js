@@ -15,12 +15,12 @@ const partnerRouter = require('./routes/partnerRouter');
 
 const mongoose = require('mongoose');
 
-const url = 'mongodb://localhost:27017/dinera';
+// const url = 'mongodb://localhost:27017/dinera';
 const uri = process.env.DB_URI;
 const connect = mongoose.connect(uri, {
-  // dbName: process.env.DB_NAME,
-  // user: process.env.DB_USER,
-  // pass: process.env.DB_PASS,
+  dbName: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  pass: process.env.DB_PASS,
   useCreateIndex: true,
   useFindAndModify: false,
   useNewUrlParser: true,

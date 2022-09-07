@@ -61,32 +61,18 @@ app.use(session({
   store: new FileStore()//creates new file store object to save session info to server disk
 }));
 
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
 //authenticatation
 function auth(req, res, next) {
   console.log(req.session);
-  if (!req.session.user) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      const err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      return next(err);
-    }
-
-    const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-    const user = auth[0];
-    const pass = auth[1];
-    if (user === 'admin' && pass === 'password') {
-      req.session.user = 'admin';//save to session that user is admin
-      return next(); //if authorized send to next
-    } else {
-      const err = new Error('You are not authenticated!');
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      return next(err);
-    }
+  if (!req.session.user) {//is client not authenticated --> send message
+    const err = new Error('You are not authenticated!');
+    err.status = 401;
+    return next(err);
   } else {
-    if (req.session.user === 'admin') {
+    if (req.session.user === 'authenticated') {//'authenticated' value we set in user router at login
       return next();
     } else {
       const err = new Error('You are not authenticated!');
@@ -99,8 +85,6 @@ function auth(req, res, next) {
 app.use(auth);
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/dines', dineRouter);
 app.use('/promotions', promotionRouter);
 app.use('/partners', partnerRouter);

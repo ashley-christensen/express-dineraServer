@@ -5,6 +5,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+require('dotenv').config();
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -15,8 +16,8 @@ const partnerRouter = require('./routes/partnerRouter');
 const mongoose = require('mongoose');
 
 const url = 'mongodb://localhost:27017/dinera';
-// const uri = process.env.DB_URI;
-const connect = mongoose.connect(url, {
+const uri = process.env.DB_URI;
+const connect = mongoose.connect(uri, {
   // dbName: process.env.DB_NAME,
   // user: process.env.DB_USER,
   // pass: process.env.DB_PASS,

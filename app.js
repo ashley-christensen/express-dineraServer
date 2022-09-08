@@ -5,7 +5,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);//require sessionfilestore returns function to call session
 
@@ -82,7 +82,7 @@ function auth(req, res, next) {
   }
 }
 
-app.use(auth);
+// app.use(auth);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dines', dineRouter);

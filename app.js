@@ -20,9 +20,6 @@ const mongoose = require('mongoose');
 // const url = 'mongodb://localhost:27017/dinera';
 const uri = process.env.DB_URI;
 const connect = mongoose.connect('mongodb+srv://mongo:mongo@dineracluster.glp1ck2.mongodb.net/dinera?retryWrites=true&w=majority', {
-  // dbName: process.env.DB_NAME,
-  // user: process.env.DB_USER,
-  // pass: process.env.DB_PASS,
   useCreateIndex: true,
   useFindAndModify: false,
   useNewUrlParser: true,
@@ -82,7 +79,7 @@ function auth(req, res, next) {
   }
 }
 
-// app.use(auth);
+app.use(auth);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dines', dineRouter);

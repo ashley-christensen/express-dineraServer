@@ -39,11 +39,11 @@ app.set('view engine', 'jade');
 
 // middleware;
 app.use(cors(
-  {
-    // react app location -- for testing on localhost - http://localhost:3000
-    origin: "http://localhost:3000",
-    credentials: true
-  }
+  // {
+  //   // react app location -- for testing on localhost - http://localhost:3000
+  //   origin: "http://localhost:3000",
+  //   credentials: true
+  // }
 ));
 app.use(logger('dev'));
 app.use(express.json());
@@ -79,7 +79,7 @@ function auth(req, res, next) {
   }
 }
 
-app.use(auth);
+// app.use(auth);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dines', dineRouter);

@@ -7,7 +7,9 @@ const logger = require('morgan');
 const cors = require('cors');
 require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 const session = require('express-session');
-const FileStore = require('session-file-store')(session);//require sessionfilestore returns function to call session
+const FileStore = require('session-file-store')(session);//returns function to call session
+const passport = require('passport');
+const authenticate = require('./authenticate');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -19,7 +21,7 @@ const mongoose = require('mongoose');
 
 // const url = 'mongodb://localhost:27017/dinera';
 const uri = process.env.DB_URI;
-const connect = mongoose.connect('mongodb+srv://mongo:mongo@dineracluster.glp1ck2.mongodb.net/dinera?retryWrites=true&w=majority', {
+const connect = mongoose.connect(uri, {
   useCreateIndex: true,
   useFindAndModify: false,
   useNewUrlParser: true,
@@ -38,19 +40,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // middleware;
-app.use(cors(
-  // {
-  //   // react app location -- for testing on localhost - http://localhost:3000
-  //   origin: "http://localhost:3000",
-  //   credentials: true
-  // }
-));
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser('12345'));
 
-app.use(session({
+app.use(session({ //calling function returned by import
   name: 'session-id',
   secret: '12345-67891-12345-67891',
   saveUninitialized: false,//on request end, not saved = avoid empty session files/cookies
@@ -58,24 +54,21 @@ app.use(session({
   store: new FileStore()//creates new file store object to save session info to server disk
 }));
 
+//passport middleware --> check for existing client session, load on req.user
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 //authenticatation
 function auth(req, res, next) {
-  console.log(req.session);
-  if (!req.session.user) {//is client not authenticated --> send message
+  if (!req.user) {//no session from passport middlware = not authenticated
     const err = new Error('You are not authenticated!');
     err.status = 401;
     return next(err);
   } else {
-    if (req.session.user === 'authenticated') {//'authenticated' value we set in user router at login
-      return next();
-    } else {
-      const err = new Error('You are not authenticated!');
-      err.status = 401;
-      return next(err);
-    }
+    return next();
   }
 }
 

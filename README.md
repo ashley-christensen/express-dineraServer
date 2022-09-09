@@ -13,15 +13,6 @@ npm install
 
 npm start 
 
-Run locally with json-server
-
-Install and run git clone https://github.com/ashley-christensen/react-redux-dinera
-
-cd react-redux-dinera
-
-npm install
-
-npm start
 
 Languages/Libraries/Tools: —NodeJS, Express, MongoDB, Mongoose, MongoDB Atlas, Mongo REPL shell (for local/manual use), dotenv-webpack. 
 

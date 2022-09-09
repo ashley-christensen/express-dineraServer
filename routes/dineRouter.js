@@ -1,5 +1,6 @@
 const express = require('express');
 const Dine = require('../models/dine');
+const authenticate = require('../authenticate');
 
 const dineRouter = express.Router();//instance of express.Router()
 
@@ -13,7 +14,7 @@ dineRouter.route('/')
             })
             .catch(err => next(err));//hands off error to overall handler in expres app.js
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, (req, res, next) => {
         Dine.create(req.body)
             .then(createdDine => {
                 res.statusCode = 200;
@@ -22,11 +23,11 @@ dineRouter.route('/')
             })
             .catch(err => next(err));
     })
-    .put((req, res) => {
+    .put(authenticate.verifyUser, (req, res) => {
         res.statusCode = 403; //403 == Operation not supported 
         res.end('PUT operation not supported on /dines');
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         Dine.deleteMany()
             .then(response => {
                 res.statusCode = 200;
@@ -47,11 +48,11 @@ dineRouter.route('/:dineId')
             })
             .catch(err => next(err));
     })
-    .post((req, res) => {
+    .post(authenticate.verifyUser, (req, res) => {
         res.statusCode = 403;//403 == operation not supported
         res.end(`POST operation is not supported on /dines/${req.params.dineId}`);
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         Dine.findByIdAndUpdate(req.params.dineId, {
             $set: req.body
         },
@@ -63,7 +64,7 @@ dineRouter.route('/:dineId')
                 res.json(dine);//sends updated document 
             });
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         Dine.findByIdAndDelete(req.params.dineId)
             .then(response => {
                 res.statusCode = 200;
@@ -89,7 +90,7 @@ dineRouter.route('/:dineId/comments')
             })
             .catch(err => next(err));
     })
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, (req, res, next) => {
         Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine) {
@@ -109,11 +110,11 @@ dineRouter.route('/:dineId/comments')
             })
             .catch(err => next(err));
     })
-    .put((req, res) => {
+    .put(authenticate.verifyUser, (req, res) => {
         res.statusCode = 403;
         res.end(`PUT operation not supported on /dines/${req.params.dineId}/comments`);
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine) {
@@ -156,11 +157,11 @@ dineRouter.route('/:dineId/comments/:commentId')
             })
             .catch(err => next(err));
     })
-    .post((req, res) => {
+    .post(authenticate.verifyUser, (req, res) => {
         res.statusCode = 403;
         res.end(`POST operation not supported on /dines/${req.params.dineId}/comments/${req.params.commentId}`);
     })
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine && dine.comments.id(req.params.commentId)) {
@@ -189,7 +190,7 @@ dineRouter.route('/:dineId/comments/:commentId')
             })
             .catch(err => next(err));
     })
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine && dine.comments.id(req.params.commentId)) {

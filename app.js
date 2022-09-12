@@ -1,10 +1,9 @@
-
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const cors = require('cors');
-require('dotenv').config({ path: path.resolve(__dirname, './.env') });
+require('dotenv').config();
 const passport = require('passport');
 const config = require('./config');
 

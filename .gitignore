@@ -1,2 +1,4 @@
 node_modules
 .env
+bin/server.key
+bin/server.cert

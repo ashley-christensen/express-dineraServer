@@ -7,6 +7,7 @@ const dineRouter = express.Router();//instance of express.Router()
 dineRouter.route('/')
     .get((req, res, next) => {
         Dine.find()
+            .populate('comments.author') //populate author field of comments subdocument
             .then(dines => {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
@@ -14,7 +15,7 @@ dineRouter.route('/')
             })
             .catch(err => next(err));//hands off error to overall handler in expres app.js
     })
-    .post(authenticate.verifyUser, (req, res, next) => {
+    .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Dine.create(req.body)
             .then(createdDine => {
                 res.statusCode = 200;
@@ -27,7 +28,7 @@ dineRouter.route('/')
         res.statusCode = 403; //403 == Operation not supported 
         res.end('PUT operation not supported on /dines');
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Dine.deleteMany()
             .then(response => {
                 res.statusCode = 200;
@@ -41,6 +42,7 @@ dineRouter.route('/')
 dineRouter.route('/:dineId')
     .get((req, res, next) => {
         Dine.findById(req.params.dineId)//parses id requested by user/client
+            .populate('comments.author') //populate author field of comments subdocument
             .then(dine => {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
@@ -48,7 +50,7 @@ dineRouter.route('/:dineId')
             })
             .catch(err => next(err));
     })
-    .post(authenticate.verifyUser, (req, res) => {
+    .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
         res.statusCode = 403;//403 == operation not supported
         res.end(`POST operation is not supported on /dines/${req.params.dineId}`);
     })
@@ -64,7 +66,7 @@ dineRouter.route('/:dineId')
                 res.json(dine);//sends updated document 
             });
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Dine.findByIdAndDelete(req.params.dineId)
             .then(response => {
                 res.statusCode = 200;
@@ -77,6 +79,7 @@ dineRouter.route('/:dineId')
 dineRouter.route('/:dineId/comments')
     .get((req, res, next) => {
         Dine.findById(req.params.dineId)
+            .populate('comments.author') //populate author field of comments subdocument
             .then(dine => {
                 if (dine) {
                     res.statusCode = 200;
@@ -94,6 +97,7 @@ dineRouter.route('/:dineId/comments')
         Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine) {
+                    req.body.author = req.user._id;//author field holds _id of user for populate() method
                     dine.comments.push(req.body);
                     dine.save()
                         .then(dine => {
@@ -114,7 +118,7 @@ dineRouter.route('/:dineId/comments')
         res.statusCode = 403;
         res.end(`PUT operation not supported on /dines/${req.params.dineId}/comments`);
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine) {
@@ -140,6 +144,7 @@ dineRouter.route('/:dineId/comments')
 dineRouter.route('/:dineId/comments/:commentId')
     .get((req, res, next) => {
         Dine.findById(req.params.dineId)
+            .populate('comments.author') //populate author field of comments subdocument
             .then(dine => {
                 if (dine && dine.comments.id(req.params.commentId)) {
                     res.statusCode = 200;
@@ -165,19 +170,25 @@ dineRouter.route('/:dineId/comments/:commentId')
         Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine && dine.comments.id(req.params.commentId)) {
-                    if (req.body.rating) {
-                        dine.comments.id(req.params.commentId).rating = req.body.rating;
+                    if ((dine.comments.id(req.params.commentId).author._id).equals(req.user._id)) {
+                        if (req.body.rating) {
+                            dine.comments.id(req.params.commentId).rating = req.body.rating;
+                        }
+                        if (req.body.text) {
+                            dine.comments.id(req.params.commentId).text = req.body.text;
+                        }
+                        dine.save()
+                            .then(dine => {
+                                res.statusCode = 200;
+                                res.setHeader('Content-Type', 'application/json');
+                                res.json(dine);
+                            })
+                            .catch(err => next(err));
+
+                    } else {
+                        res.statusCode = 403;
+                        res.end('You cannot change a comment that is not yours!');
                     }
-                    if (req.body.text) {
-                        dine.comments.id(req.params.commentId).text = req.body.text;
-                    }
-                    dine.save()
-                        .then(dine => {
-                            res.statusCode = 200;
-                            res.setHeader('Content-Type', 'application/json');
-                            res.json(dine);
-                        })
-                        .catch(err => next(err));
                 } else if (!dine) {
                     err = new Error(`Dine experience${req.params.dineId} not found`);
                     err.status = 404;
@@ -194,14 +205,19 @@ dineRouter.route('/:dineId/comments/:commentId')
         Dine.findById(req.params.dineId)
             .then(dine => {
                 if (dine && dine.comments.id(req.params.commentId)) {
-                    dine.comments.id(req.params.commentId).remove();
-                    dine.save()
-                        .then(dine => {
-                            res.statusCode = 200;
-                            res.setHeader('Content-Type', 'application/json');
-                            res.json(dine);
-                        })
-                        .catch(err => next(err));
+                    if ((dine.comments.id(req.params.commentId).author._id).equals(req.user._id)) {
+                        dine.comments.id(req.params.commentId).remove();
+                        dine.save()
+                            .then(dine => {
+                                res.statusCode = 200;
+                                res.setHeader('Content-Type', 'application/json');
+                                res.json(dine);
+                            })
+                            .catch(err => next(err));
+                    } else {
+                        res.statusCode = 403;
+                        res.end(`You cannot change a comment that isn't yours!`);
+                    }
                 } else if (!dine) {
                     err = new Error(`dine ${req.params.dineId} not found`);
                     err.status = 404;

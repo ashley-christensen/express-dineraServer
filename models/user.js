@@ -3,6 +3,14 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+ firstname: {
+  type: String,
+  default: ''
+ },
+ lastname: {
+  type: String,
+  default: ''
+ },
  // passportLocalMongoose will add username/password fields + Hash && Salt password
  admin: {
   type: Boolean,

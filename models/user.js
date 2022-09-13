@@ -11,7 +11,7 @@ const userSchema = new Schema({
   type: String,
   default: ''
  },
- // passportLocalMongoose will add username/password fields + Hash && Salt password
+ //passportLocalMongoose will add username/password fields + Hash && Salt password
  admin: {
   type: Boolean,
   default: false

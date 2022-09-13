@@ -1,0 +1,19 @@
+[
+	{
+		"_id": {
+			"$oid": "5f0280ff258ff350affd360a"
+		},
+		"featured": true,
+		"name": "Dinner Party for 12+",
+		"image": "images/party.jpg",
+		"cost": 1099,
+		"description": "Celebrate with friends and family with our deluxe party room and selections.",
+		"createdAt": {
+			"$date": "2022-07-06T01:40:15.270Z"
+		},
+		"updatedAt": {
+			"$date": "2022-07-06T01:40:15.270Z"
+		},
+		"__v": 0
+	}
+]

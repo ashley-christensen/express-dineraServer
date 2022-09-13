@@ -1,0 +1,66 @@
+[
+	{
+		"_id": {
+			"$oid": "5f02803a258ff350affd3602"
+		},
+		"featured": false,
+		"name": "Brunch Deluxe",
+		"image": "images/brunches.jpg",
+		"description": "Luxurious platters of the freshest harvest, begin your day or end your weekend with the most dazzling of all brunches.",
+		"createdAt": {
+			"$date": "2022-07-06T01:36:58.187Z"
+		},
+		"updatedAt": {
+			"$date": "2022-07-06T01:36:58.187Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f02804e258ff350affd3603"
+		},
+		"featured": false,
+		"name": "Dinner and Dine",
+		"image": "images/dinner.jpg",
+		"description": "Spend an evening dining on breathtaking and delicious trays from around the world. Straight from local and organic farms.",
+		"createdAt": {
+			"$date": "2022-07-06T01:37:18.367Z"
+		},
+		"updatedAt": {
+			"$date": "2022-07-06T01:37:18.367Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f02805d258ff350affd3604"
+		},
+		"featured": false,
+		"name": "Happy Hour Escape",
+		"image": "images/cocktails.jpg",
+		"description": "Let our happy hour take away your stress. Sit back, relax, and enjoy our most elegant cocktails.",
+		"createdAt": {
+			"$date": "2022-07-06T01:37:33.290Z"
+		},
+		"updatedAt": {
+			"$date": "2022-07-06T01:37:33.290Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f028064258ff350affd3605"
+		},
+		"featured": true,
+		"name": "Dessert Delicacies",
+		"image": "images/desserts.jpg",
+		"description": "Once you try one of our world famous desserts, you will never quit coming back.",
+		"createdAt": {
+			"$date": "2022-07-06T01:37:40.968Z"
+		},
+		"updatedAt": {
+			"$date": "2022-07-06T01:37:40.968Z"
+		},
+		"__v": 0
+	}
+]

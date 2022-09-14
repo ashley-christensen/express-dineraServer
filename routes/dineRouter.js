@@ -1,7 +1,7 @@
 const express = require('express');
-const Dine = require('../models/dine');
 const authenticate = require('../authenticate');
 const cors = require('./cors');
+const Dine = require('../models/dine');
 
 const dineRouter = express.Router();//instance of express.Router()
 
